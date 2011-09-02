@@ -1,0 +1,51 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+use Getopt::Euclid;
+
+BEGIN: {
+	# if exists lib/Test/Pcuke.pm - then we're working
+	# in the development environment
+
+	if ( -f 'lib/Test/Pcuke.pm' ) {
+    	unshift @INC, './lib';
+	}
+
+	require Test::Pcuke;
+}
+
+my $config = get_config();
+
+my $cucumber = Test::Pcuke->new( $config );
+$cucumber->run();
+
+sub get_config {
+	my $features = $ARGV{'<filename>'};
+	my $config;
+	
+	if ($features) {
+		$features = [$features]
+			unless ref $features eq 'ARRAY';
+		$config->{features} = $features;
+	}
+	
+	return $config;
+}
+
+__END__
+=head1 NAME
+
+	pcuke [options] [<file>,...]
+
+=head1 OPTIONS
+
+=over
+
+=item <filename>...
+
+feature file to process
+
+=back
+
+=cut

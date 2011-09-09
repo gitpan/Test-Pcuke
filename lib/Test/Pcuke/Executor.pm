@@ -4,6 +4,7 @@ use warnings;
 use strict;
 
 use Carp;
+use Encode qw{decode};
 
 use Test::Pcuke::World;
 use Test::Pcuke::Executor::Status;
@@ -24,21 +25,44 @@ Test::Pcuke::StepRunner - Runner of the steps.
 =cut
 
 	sub new {
-		my ($class) = @_;
+		my ($class, $encoding) = @_;
 	
-		$self ||= bless ( { _step_definitions => {} }, $class );
+		$self ||= bless ( { 
+			_step_definitions	=> {},
+			_encoding			=> $encoding, 
+		}, $class );
 	
 		$self->set_world();
 	
 		return $self;
 	}
 	
+=head2 destroy
+
+Destroys the singleton so that the next new() creates another object
+
+=cut
+
 	sub destroy { undef $self }
 }
 
 =head2 add_definition %definition
 
-Adds definition keys %definition are qw{ step_type, regexp, coderef }
+Adds a step definition. Keys of the %definition are:
+
+=over
+
+=item step_type
+One of 'GIVEN', 'WHEN', 'THEN', 'AND', 'BUT', '*'
+
+=item regexp
+A regular expression against that the step title should match
+
+=item coderef
+A reference to the code which should be executed if the
+title of the step matches the regexp
+
+=back
 
 =cut	
 	
@@ -55,21 +79,41 @@ sub add_definition {
 		  uc $def{step_type}
 		: q{};
 	
-	# TODO I18n
 	confess 'Incorrect step type. Must be GIVEN|WHEN|THEN|AND'
 		unless grep { $_ eq $def{step_type} } qw{GIVEN WHEN THEN AND BUT *};
 
 	confess 'Regexp required'
 		unless $def{regexp};
 	
-	$def{code} ||= \&nop;
+	$def{regexp} = decode($self->{_encoding}, $def{regexp})
+		if $self->{_encoding};
+	
+	$def{code} ||= \&_nop;
 	
 	$self->{_step_definitions}->{ $def{regexp} } = $def{code};
 }
 
 =head2 execute $step
 
-Executes the step. 
+Executes the step. Finds the first definition to whose regexp the step title match,
+then calls code of that definition passing to it three arguments
+
+=over
+
+=item $world
+Test::Pcuke::World, the object, which is the same for any step inside a scenario
+
+=item $text
+A multiline text associated with the step in *.feature file
+
+=item $table
+A Test::Pcuke::Gherkin::Node::Table object for the table associated with the step in 
+the *.feature file
+
+=back 
+
+Returns Test::Pcuke::Executor::Status object with the status of the execution, which
+is 'undef' if no suitable definition is found.
 
 =cut
 
@@ -110,6 +154,11 @@ sub _try_definition {
 	return $exception;
 }
 
+=head2 reset_world
+
+This method resets the $world object that is passed to step definition
+
+=cut
 sub reset_world { $_[0]->set_world }
 
 =head2 set_world $world?
@@ -126,10 +175,16 @@ sub set_world {
 		: Test::Pcuke::World->new;	
 }
 
+=head2 world
+
+Returns the current world object that is passed to step definitions
+
+=cut
+
 sub world { $_[0]->{_world} }
 
-# do nothing
-sub nop {}
+
+sub _nop { }
 
 1; # End of Test::Pcuke::StepRunner
 __END__

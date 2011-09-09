@@ -3,7 +3,12 @@ package Test::Pcuke;
 use warnings;
 use strict;
 
+use Carp;
+
+use Encode qw{encode};
+
 use Test::Pcuke::Gherkin;
+use Test::Pcuke::Gherkin::I18n;
 use Test::Pcuke::Report;
 use Test::Pcuke::Executor;
 use File::Find;
@@ -14,11 +19,11 @@ Test::Pcuke - Cucumber for Perl 5
 
 =head1 VERSION
 
-Version 0.0.1
+Version 0.0.2
 
 =cut
 
-our $VERSION = '0.000001';
+our $VERSION = '0.000002';
 
 
 =head1 SYNOPSIS
@@ -37,43 +42,52 @@ B<There are some bugs lurking around. Please report if you find any!>
 	
 	$runner->run();
 
-As to v. 0.0.1 only utf-8 encoding is supported!
+As to v. 0.0.2 only utf-8 encoding is supported!
 
 To see the list of languages that pcuke supports use a command:
 
-	$ perl -MTest::Pcuke::Gherkin::I18n \
-		-e '$langs = Test::Pcuke::Gherkin::I18n->languages;'\
-		'@$langs = map { utf8::encode($_); $_ } @$langs;'\
-		'print join ("\n", @$langs),"\n"'
+	$ pcuke --i18n help
 
 To see the information on a language, 'ru' for example, use:
 
-	$ perl -MTest::Pcuke::Gherkin::I18n -e \
-		'$info = Test::Pcuke::Gherkin::I18n->language_info( "ru" );'\
-		'@$info = map { utf8::encode($_); $_ } map { $_->[0] . "\t-> " . $_->[1] } @$info;'\
-		'print join( "\n", @$info ), "\n"'
+	$ pcuke --i18n ru
 	
 	
 
 =head1 METHODS
 
-=head2 new %conf
+=head2 new $conf
 
 	Creates an instance of Test::Pcuke, a I<runner>.
 
 =cut
 
 sub new {
-	my ($class, $conf) = @_;
+	my ($class, $args) = @_;
 	
-	my @options = qw{features};
+	my $conf = $class->_translate_cmdline_args( $args );
 	
-	my %self = ();
-	@self{ @options } = @{$conf}{ @options }; 
+	bless $conf, $class;
 	
-	bless \%self, $class;
+	return $conf;	
+}
+
+sub _translate_cmdline_args {
+	my ($class, $args) = @_;
 	
-	return \%self;	
+	my @keys = map { ( /^--([-\w]+)$/ ) ? ($1) : () } keys %$args;
+	
+	my $conf = { };
+	
+	foreach ( @keys ) {
+		$conf->{$_} = $args->{"--$_"};
+	}
+	
+	if ( $args->{'<filename>'} ) {
+		$conf->{features} = $args->{'<filename>'};
+	}
+	
+	return $conf; 
 }
 
 =head2 run
@@ -86,7 +100,9 @@ sub run {
 	my ($self) = @_;
 	my $features;
 	
-	$self->{_executor} = Test::Pcuke::Executor->new;
+	return $self->i18n() if $self->{i18n};
+	
+	$self->{_executor} = Test::Pcuke::Executor->new( $self->{encoding} );
 	
 	$self->load_step_definitions();
 	$self->process_features();
@@ -95,7 +111,28 @@ sub run {
 		features	=>  $self->{_executed_features},
 	);
 	
-	$report->build();
+	my $output = $report->build(); 
+	
+	$output = encode($self->{encoding}, $output)
+		if $self->{encoding};
+	
+	print $output;
+}
+
+sub i18n {
+	my ($self) = @_;
+	
+	if ( my $lang = $self->{i18n} =~ /^help$/i ) {
+		print join "\n", map { utf8::encode($_); $_ } @{ Test::Pcuke::Gherkin::I18n->languages };
+	} 
+	else {
+		my $info = Test::Pcuke::Gherkin::I18n->language_info( $self->{i18n} );
+        foreach (@$info) {
+            utf8::encode($_->[0]);
+            utf8::encode($_->[1]);
+            print join( " -> ", @$_ ),"\n";
+        }	
+	}
 }
 
 sub executor { $_[0]->{_executor} }
@@ -123,11 +160,14 @@ sub process_features {
 sub get_file_content {
 	my ($self, $fn) = @_;
 	
+	my $encoding = $self->{encoding} || 'utf-8';
+	
 	local $/;
 	
 	my ($fh, $content);
 	
-	open $fh, "<", $fn;
+	open( $fh, "<:encoding($encoding)", $fn )
+		or confess "Can't open $fn for reading";
 	$content = <$fh>;
 	close $fh;
 	

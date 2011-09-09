@@ -13,7 +13,7 @@ TODO SYNOPSIS
 
     use Test::Pcuke::Executor::Status;
 
-    my $status = Test::Pcuke::Executor::Status->new();
+    my $status = Test::Pcuke::Executor::Status->new($status, $exception);
     ...
 
 =head1 METHODS
@@ -33,10 +33,22 @@ sub new {
 	}, $class;
 }
 
+=head2 status
+
+Returns the status string passed to the constructor
+
+=cut
+
 sub status {
 	my ($self) = @_;
 	return $self->{_status};
 }
+
+=head2 exception 
+
+Returns the exception passed to the constructor
+
+=cut
 
 sub exception {
 	my ($self) = @_;

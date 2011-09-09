@@ -15,29 +15,28 @@ BEGIN: {
 	require Test::Pcuke;
 }
 
-my $config = get_config();
-
-my $cucumber = Test::Pcuke->new( $config );
+my $cucumber = Test::Pcuke->new( \%ARGV );
 $cucumber->run();
 
-sub get_config {
-	my $features = $ARGV{'<filename>'};
-	my $config;
-	
-	if ($features) {
-		$features = [$features]
-			unless ref $features eq 'ARRAY';
-		$config->{features} = $features;
-	}
-	
-	return $config;
-}
 
 __END__
 =head1 NAME
 
 	pcuke [options] [<file>,...]
 
+=head1 DESCRIPTION
+
+By default I<pcuke> recursively scans ./features directory and loads
+all *.pm files using I<require()>. Then it scans again that directory
+and executes any gherkin, i. e. a *.feature file, and prints out a
+(colorful) report.
+
+If a <filename> is given then pcuke executes only that gherkin file.
+
+See L<Test::Pcuke::StepDefinition> on how to define steps
+
+See L<Test::Pcuke::Executor> on the details of step execution
+ 
 =head1 OPTIONS
 
 =over
@@ -45,6 +44,16 @@ __END__
 =item <filename>...
 
 feature file to process
+
+=item --i18n <LANG>
+
+print keywords for a particular language. Use '--i18n help' for the list of
+supported languages.
+
+=item --encoding <encoding>
+
+Use <encoding> instead of 'utf-8'. Affects feature files, step definition
+(do not 'use utf8' there!) and printing out the report!
 
 =back
 

@@ -37,8 +37,6 @@ sub new {
 	
 	$self->set_features( $args{features} )
 		if $args{features};
-	$self->set_printer( $args{printer} )
-		if $args{printer};
 	$self->set_debug_template( $args{debug} || q{} );
 	
 	return $self;
@@ -98,13 +96,8 @@ sub build {
 		features	=> $self->features,
 	}, \$output )
 		|| confess( Template->error(), "\n" );
-	
-	if ( $self->printer ) {
-		$self->printer->print($output);
-	}
-	else {
-		print "$output";
-	}
+
+	return $output;	
 }
 
 

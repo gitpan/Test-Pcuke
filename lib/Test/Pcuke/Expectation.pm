@@ -39,16 +39,34 @@ sub new {
 	return bless \%instance_data, $class;
 }
 
+=head2 is_defined
+
+Checks if the object is defined
+
+=cut
+
 sub is_defined {
 	my ($self) = @_;
 	return $self->_result( defined $self->_object ); 
 }
+
+=head2 is_a $class
+
+Checks if the object isa $class
+
+=cut
 
 sub is_a { 
 	my ($self, $class) = @_;
 	my $result = eval { $self->_object->isa($class) };
 	return $self->_result($result, $class);
 }
+
+=head2 equals $subject
+
+Checks if the object eq $subject
+
+=cut
 
 sub equals {
 	my ($self, $value) = @_; 

@@ -1,5 +1,9 @@
 Revision history for Test-Cucumber
 
-0.01    Date/Time
+0.0.2	xx.09.2011
+		Add: pcuke --i18n <LANG>
+		Add: pcuke --encoding <ENCODING> option
+
+0.0.1    02.09.2011
         First version, released on an unsuspecting world.
 

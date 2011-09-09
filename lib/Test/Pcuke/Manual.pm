@@ -59,10 +59,10 @@ English speaker would prefer the following Gherkin:
     		  | 2       | 5       | add    | 7      |
 	    	  | 0       | 40      | add    | 40     |
 
-These examples express some expectations of the customer on the software being developed
-by the developer. Both are expected to write these Gherkin texts together. Then the
+These examples express some expectations of the I<customer> on the software being developed
+by the I<developer>. Both are expected to write these Gherkin texts together. Then the
 developer provides I<definitions> which turn each such a text into a set of acceptance tests.
-Then cucumber tool reads these defenitions and executes Gherkin files one by one reporting
+Then I<cucumber> tool reads these defenitions and executes Gherkin files one by one reporting
 on failures and success.
 
 Original cucumber tool is developed using Ruby language and does not support Perl. That's 
@@ -70,22 +70,23 @@ why...
 
 =head1 PCUKE
 
-As to v 0.0.1 pcuke expects utf-8 encoding!!!
-
 For example we develop a Local::Adder module that adds one number to the other. As a developers
 we sit down with the customer and write down the texts shown above. Let's consider the english
 example line by line.
 
+=head2 Gherkin explained
+
 	# language: en
 
-The first line is a pragma. Pragmas tell something important to the pcuke parser.
-Here we say that we use English for Gherkin statements.
+The first line is a pragma. Pragmas tell something important to the B<pcuke> parser.
+Here we say that we use English for Gherkin statements. Note that English is a default
+language and this line is not required.
 
 	Feature: Addition
 
 This statement names the piece of functionality that is described in the file. "Feature:"
-is a keyword, "Addition" is a title that best describes the functionality. There should
-be exactly one "Feature" statement per Gherkin file.
+is a I<keyword>, "Addition" is a I<title> that best describes the functionality. There should
+be exactly one I<Feature> statement per Gherkin file.
 	
 	In order to avoid silly mistakes
 	As a math idiot 
@@ -104,8 +105,8 @@ This is a precondition common to all scenarios.
 		
 	Scenario Outline: Add two numbers
 
-This statement declares the template for scenarios. "Scenario Outline:" is a keyword
-while "Add two numbers" is a title. Each scenario consists of steps that have names
+This statement declares the template for scenarios. "Scenario Outline:" is a I<keyword>
+while "Add two numbers" is a I<title>. Each scenario consists of steps that have names
 "Given", "When" and  "Then". These steps describe preconditions, events and
 expected results respectively. There are steps with the special names "And" and
 "But". These steps extend the previous "Given", "When", or "Then" step.
@@ -153,10 +154,10 @@ Each of the following rows describe two more scenarios:
 
 
 Put this Gherkin text into <your calculator project root>/features/addition.feature file
-(copy and paste from the CUCUMBER section above!). Now you can launch pcuke from the
+(copy and paste from the CUCUMBER section above!). Now you can launch B<pcuke> from the
 <your calculator project root>. The output should look like:
 
-	localhost:~/src/<your calculator project root>$ bin/pcuke 
+	localhost:~/src/<your calculator project root>$ pcuke 
 	Feature: Addition
 
         In order to avoid silly mistakes
@@ -184,6 +185,8 @@ Put this Gherkin text into <your calculator project root>/features/addition.feat
 Pcuke says that it found 3 scenarios (one per each row in the table), 15 steps
 (1 step in background + 4 steps in template) times 3 scenarios, and all steps and
 scenarios are undefined.
+
+=head2 Step Definitions
 
 We should define steps. For that reason we create a file
 <your calculator project root>/step_definitions/steps.pm with the
@@ -213,7 +216,7 @@ following content:
 
 	1; # Do not forget this number. pcuke uses require()!
 	 
-Now launch pcuke again to see (some output is skipped):
+Now launch B<pcuke> again to see (some output is skipped):
 
 	...............
 	3 scenarios
@@ -234,7 +237,7 @@ Now let's do some actual work. in steps.pm edit a background step definition:
 		$world->{_calculator} = Local::Adder->new;
 	};
 
-Launching the pcuke we see that a background step is failed three times, before
+Launching the B<pcuke> we see that a background step is failed three times, before
 execution of each of three scenarios. This is because we have not loaded Local::Adder!
 
 Let's add two files. The first one is <your calculator project root>/lib/Local/Adder.pm:
@@ -262,7 +265,7 @@ The second is <your calculator project root>/features/support/env.pm
 
 	1; # this number is important
 
-Now pcuke says that all steps are defined again.
+Now B<pcuke> says that all steps are defined again.
 
 Let's define the rest of the steps. Edit the <your calculator project root>/step_definitions/steps.pm
 file:
@@ -283,7 +286,7 @@ file:
 		expect( $world->{_result} )->equals($1);
 	};
 
-Now pcuke says that "When" step fails. That's because there is no add method
+Now B<pcuke> says that "When" step fails. That's because there is no add method
 in Adder. Define it in <your calculator project root>/lib/Local/Adder.pm:
 
 	sub add { $_[1] + $_[2]; }

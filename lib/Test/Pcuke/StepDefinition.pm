@@ -17,15 +17,48 @@ our $_executor;
 
 =head1 NAME
 
-Test::Pcuke::StepDefinition - Provides the commands for step definitions
+Test::Pcuke::StepDefinition - Provides the commands for steps' definitions
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+This module is used to define steps. If you are L<pcuke> user
+then you probably want save your step definitions to
+<your project>/features/step_definitions/steps.pm. Content
+of that file could look like this:
 
-    use Test::Pcuke::StepDefinition;
-    # TODO
-    ...
+	package steps;
+	use utf8;		# for i18n-zed regexps
+	use warnings;
+	use strict;
+	
+	use Test::Pcuke::StepDefinition;
+	
+	Given qr{^a calculator instance$} => sub {
+    	my ($world, $text, $table) = @_;
+        $world->{_calculator} = Local::Adder->new;
+	};
+	
+	Given qr{^I have entered "([^"]+)" into the calculator} => sub {
+		my ($world, $text, $table) = @_;
+		push @{ $world->{_arguments} }, $1;
+	};
+
+	When qr{^I press "([^"]+)"$} => sub {
+		my ($world, $text, $table) = @_;
+		my ($a1, $a2) = @{ $world->{_arguments} };
+		$world->{_result} = $world->{_calculator}->add( $a1, $a2 );
+	};
+
+	Then qr{^the result should be "([^"]+)" on the screen$} => sub {
+		my ($world, $text, $table) = @_;
+		expect( $world->{_result} )->equals($1);
+	};
+	
+	1; # Do not forget this number. pcuke uses require
+
+Note that if you can use native language in *.feature file
+you can't currently use native language for Given, When etc.
+
 
 =head1 EXPORT
 
@@ -35,6 +68,8 @@ Given, When, Then, And, But
 
 =head2 Given $regexp $coderef
 
+Synonym of the add_step.
+
 =cut
 
 sub Given ($$) {
@@ -42,22 +77,53 @@ sub Given ($$) {
 	add_step('GIVEN', $regexp, $coderef);
 }
 
+=head2 When $regexp $coderef
+
+Synonym of the add_step.
+
+=cut
+
 sub When ($$) {
 	add_step('WHEN',@_);
 }
+
+=head2 Then $regexp $coderef
+
+Synonym of the add_step.
+
+=cut
 
 sub Then ($$) {
 	add_step('THEN',@_)
 }
 
+=head2 And $regexp $coderef
+
+Synonym of the add_step.
+
+=cut
+
 sub And ($$) {
 	add_step('AND',@_)
 }
+
+=head2 But $regexp $coderef
+
+Synonym of the add_step.
+
+=cut
 
 sub But ($$) {
 	add_step('BUT',@_)
 }
 
+=head2 add_step $regexp, $coderef
+
+Add a definition for a step whose title match $regexp.
+
+See L<Test::Pcuke::Executor>->add_definition().
+
+=cut
 
 sub add_step {
 	my ($type, $regexp, $coderef) = @_;
@@ -69,6 +135,12 @@ sub add_step {
 		code		=> $coderef,
 	);
 }
+
+=head2 expect $object
+
+Return L<Test::Pcuke::Expectation> object. Use it for tests in step definitions 
+
+=cut
 
 sub expect {
 	my ($object) = @_;

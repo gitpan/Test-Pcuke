@@ -15,7 +15,7 @@ name: Test-Pcuke
 provides:
   Test::Pcuke:
     file: lib/Test/Pcuke.pm
-    version: 0.000001
+    version: 0.000002
   Test::Pcuke::Executor:
     file: lib/Test/Pcuke/Executor.pm
   Test::Pcuke::Executor::Status:
@@ -34,4 +34,4 @@ provides:
     file: lib/Test/Pcuke/World.pm
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.000001
+version: 0.000002

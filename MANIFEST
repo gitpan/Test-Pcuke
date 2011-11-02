@@ -24,5 +24,6 @@ t/150-report.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
+t/lib/Test/Pcuke/Tests/Mockery.pm
 Makefile.PL
 META.yml

@@ -261,6 +261,10 @@ __DATA__
 		[% INCLUDE table %]
 	[% END %]
 [% END %][% END %]
+[% exception = step.result.exception %]
+[% IF exception.message %]
+[% "\n\nException: " _ exception.message _ "\n" | color colors.fail %]
+[% END %]
 
 [!!! BLOCK scenario !!!]
 [% scenario.title _ "\n" %]

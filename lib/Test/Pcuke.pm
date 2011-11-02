@@ -19,11 +19,11 @@ Test::Pcuke - Cucumber for Perl 5
 
 =head1 VERSION
 
-Version 0.0.2
+Version 0.0.4
 
 =cut
 
-our $VERSION = '0.000002';
+our $VERSION = '0.000004';
 
 
 =head1 SYNOPSIS
@@ -74,11 +74,11 @@ sub new {
 
 sub _translate_cmdline_args {
 	my ($class, $args) = @_;
+	my $conf = {
+		encoding	=> 'utf8'
+	};
 	
 	my @keys = map { ( /^--([-\w]+)$/ ) ? ($1) : () } keys %$args;
-	
-	my $conf = { };
-	
 	foreach ( @keys ) {
 		$conf->{$_} = $args->{"--$_"};
 	}
@@ -123,14 +123,17 @@ sub i18n {
 	my ($self) = @_;
 	
 	if ( my $lang = $self->{i18n} =~ /^help$/i ) {
-		print join "\n", map { utf8::encode($_); $_ } @{ Test::Pcuke::Gherkin::I18n->languages };
+		print join "\n", map {
+			Encode::encode($self->{encoding},$_)
+		} @{ Test::Pcuke::Gherkin::I18n->languages }, "\n";
 	} 
 	else {
 		my $info = Test::Pcuke::Gherkin::I18n->language_info( $self->{i18n} );
         foreach (@$info) {
-            utf8::encode($_->[0]);
-            utf8::encode($_->[1]);
-            print join( " -> ", @$_ ),"\n";
+        	print join( " -> ",
+        		Encode::encode($self->{encoding}, $_->[0]),
+        		Encode::encode($self->{encoding}, $_->[1])
+        	),"\n";
         }	
 	}
 }

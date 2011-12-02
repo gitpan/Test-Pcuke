@@ -1,5 +1,8 @@
 Revision history for Test-Cucumber
 
+0.0.5   02.12.2011
+	Fix: dependencies
+
 0.0.4   02.11.2011
 	Fix: MANIFEST to include t/lib/.../Mockery.pm
 

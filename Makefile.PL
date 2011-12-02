@@ -5,7 +5,14 @@ WriteMakefile
           'NAME' => 'Test::Pcuke',
           'VERSION_FROM' => 'lib/Test/Pcuke.pm',
           'PREREQ_PM' => {
-                           'Test::Most' => 0
+                           'Carp' => 0,
+                           'Encode' => 0,
+                           'Exporter' => 0,
+                           'File::Find' => 0,
+                           'FindBin' => 0,
+                           'Mock::Quick' => 0,
+                           'Test::Most' => 0,
+                           'Test::Pcuke::Gherkin' => 0
                          },
           'INSTALLDIRS' => 'site',
           'EXE_FILES' => [

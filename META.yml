@@ -3,6 +3,9 @@ abstract: 'Cucumber for Perl 5'
 author:
   - "\"Andrei V. Toutoukine\" <\"tut@isuct.ru\">"
 build_requires:
+  Exporter: 0
+  FindBin: 0
+  Mock::Quick: 0
   Test::Most: 0
 configure_requires:
   Module::Build: 0.36
@@ -15,7 +18,7 @@ name: Test-Pcuke
 provides:
   Test::Pcuke:
     file: lib/Test/Pcuke.pm
-    version: 0.000004
+    version: 0.000005
   Test::Pcuke::Executor:
     file: lib/Test/Pcuke/Executor.pm
   Test::Pcuke::Executor::Status:
@@ -32,6 +35,11 @@ provides:
     file: lib/Test/Pcuke/StepDefinition.pm
   Test::Pcuke::World:
     file: lib/Test/Pcuke/World.pm
+requires:
+  Carp: 0
+  Encode: 0
+  File::Find: 0
+  Test::Pcuke::Gherkin: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.000004
+version: 0.000005

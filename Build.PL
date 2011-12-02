@@ -9,7 +9,17 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/Test/Pcuke.pm',
     build_requires => {
         'Test::Most'	=> 0,
+        'Exporter'		=> 0,
+        'Mock::Quick'	=> 0,
+        'FindBin'		=> 0,
+        
     },
+	requires	=> {
+		'Test::Pcuke::Gherkin'	=> 0,
+		'Carp'					=> 0,
+		'Encode'				=> 0,
+		'File::Find'			=> 0,
+	},
     add_to_cleanup      => [ 'Test-Pcuke-*' ],
     create_makefile_pl => 'traditional',
 );

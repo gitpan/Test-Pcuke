@@ -11,6 +11,8 @@ WriteMakefile
                            'File::Find' => 0,
                            'FindBin' => 0,
                            'Mock::Quick' => 0,
+                           'Template' => 0,
+                           'Template::Plugin::Filter::ANSIColor' => 0,
                            'Test::Most' => 0,
                            'Test::Pcuke::Gherkin' => 0
                          },

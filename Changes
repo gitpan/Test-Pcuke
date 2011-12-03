@@ -1,5 +1,8 @@
 Revision history for Test-Cucumber
 
+0.0.6   03.12.2011
+	Fix: dependencies %-(
+	
 0.0.5   02.12.2011
 	Fix: dependencies
 

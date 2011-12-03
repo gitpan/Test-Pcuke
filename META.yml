@@ -18,7 +18,7 @@ name: Test-Pcuke
 provides:
   Test::Pcuke:
     file: lib/Test/Pcuke.pm
-    version: 0.000005
+    version: 0.000006
   Test::Pcuke::Executor:
     file: lib/Test/Pcuke/Executor.pm
   Test::Pcuke::Executor::Status:
@@ -39,7 +39,9 @@ requires:
   Carp: 0
   Encode: 0
   File::Find: 0
+  Template: 0
+  Template::Plugin::Filter::ANSIColor: 0
   Test::Pcuke::Gherkin: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.000005
+version: 0.000006
